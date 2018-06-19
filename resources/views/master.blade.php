@@ -10,11 +10,10 @@
     <link rel="stylesheet" href="{{asset('css/fontawesome-all.min.css')}}" crossorigin="anonymous">
 
 
-
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="{{asset('js/popper.min.js')}}" crossorigin="anonymous"></script>
-    <script src="{{asset('js/bootstrap.min.js')}}" crossorigin="anonymous"></script>
     <script src="{{asset('js/jquery-3.3.1.min.js')}}" crossorigin="anonymous"></script>
+    <script src="{{asset('js/bootstrap.min.js')}}" crossorigin="anonymous"></script>
 
 
     <title>Invia Stock Management</title>
@@ -43,10 +42,21 @@
             <li class="nav-item active">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
                    aria-haspopup="true" aria-expanded="false">
-                    Welcome,
+                    Welcome, {{ Auth::user()->username }}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right " aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="{{url('logout')}}">Logout</a>
+                    <a href="{{ route('logout') }}"
+                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();"
+                       class="dropdown-item"
+                    >
+                        Logout
+                    </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                          style="display: none;">
+                        {{ csrf_field() }}
+                    </form>
                 </div>
             </li>
 
@@ -63,9 +73,20 @@
 
     @if (Session::has('success'))
         <div class="alert alert-success">{{ Session::get('success') }}</div>
-    @endif
+@endif
 <!-- Content here -->
-    @yield('content')
+    <div class="content">
+
+    @if(isset($messages))
+            <div class="alert alert-<?php echo ($messages['type'] === 1) ? 'success' : 'danger';?> alert-dismissible"
+                 role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                {{$messages['key']}}
+            </div>
+        @endif
+        @yield('content')
+    </div>
 </div>
 
 

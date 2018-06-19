@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Entity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-    use Yajra\Datatables\Datatables;
+use Yajra\Datatables\Datatables;
 
 class EntitiesController extends Controller {
 
@@ -14,9 +14,17 @@ class EntitiesController extends Controller {
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('entities.index');
+        $messages = null;
+
+        if ($request->has('result'))
+        {
+            $messages['type'] = intval($request->result);
+            $messages['key'] = $request->result_key;
+        }
+
+        return view('entities.index', compact('messages'));
     }
 
     public function getData()
@@ -46,13 +54,58 @@ class EntitiesController extends Controller {
             $preview_path = $request->file('preview')->storeAS('public/preview', $insert_id);
             $deep_link_path = $request->file('deep_link')->storeAS('public/deep_link', $insert_id);
 
-            $entity->preview=$preview_path;
-            $entity->deep_link=$deep_link_path;
-            if($entity->update()){
-                return 'ok';
+            $entity->preview = $preview_path;
+            $entity->deep_link = $deep_link_path;
+            if ($entity->update())
+            {
+                return redirect()->route('entities.index', ['result' => true, 'result_key' => 'Image Saved']);
+
             }
+
+            return redirect()->route('entities.index', ['result' => false, 'result_key' => 'Error!!! Image Could not be Saved']);
         }
 
 
+    }
+
+    public function edit($id)
+    {
+        $entity = Entity::findOrFail($id);
+
+        return view('entities.create', compact('entity'));
+    }
+
+    public function update($id, Request $request)
+    {
+        $entity = Entity::findOrFail($id);
+        $entity->name = $request->name;
+        $entity->expire_time = $request->expire_time;
+        if ($request->preview !== null)
+        {
+            $preview_path = $request->file('preview')->storeAS('public/preview', $id);
+        }
+        if ($request->deep_link !== null)
+        {
+            $deep_link_path = $request->file('deep_link')->storeAS('public/deep_link', $id);
+        }
+
+        if ($entity->update())
+        {
+            return redirect()->route('entities.index', ['result' => true, 'result_key' => 'Image Updated']);
+
+        }
+
+        return redirect()->route('entities.index', ['result' => true, 'result_key' => 'Error!!! Image Could not be updated']);
+
+    }
+
+    public function destroy($id)
+    {
+        $entity = Entity::findOrFail($id);
+        if ($entity->delete())
+        {
+            return redirect()->route('entities.index', ['result' => true, 'result_key' => 'Image Deleted']);
+        }
+            return redirect()->route('entities.index', ['result' => false, 'result_key' => 'Error!!! Image could not be Deleted']);
     }
 }

@@ -3,11 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Entity extends Model
-{
+class Entity extends Model {
     protected $table = 'entities';
-    protected $fillable=[
+    use SoftDeletes;
+    protected $fillable = [
         'license_id',
         'user_id',
         'name',

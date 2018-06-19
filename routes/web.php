@@ -11,14 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('create');
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('/users', 'HomeController');
+Route::get('/', 'HomeController@index')->name('home');
+Route::get('/users/data', 'UsersController@getData');
+Route::resource('/users', 'UsersController');
 Route::get('/entities/data', 'EntitiesController@getData');
 Route::resource('/entities', 'EntitiesController');
 

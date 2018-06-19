@@ -23,6 +23,7 @@ class CreateEntityTable extends Migration
             $table->string('created_by');
             $table->dateTime('expire_time');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
